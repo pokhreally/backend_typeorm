@@ -1,7 +1,17 @@
-import { Entity, BaseEntity, Column } from "typeorm";
+import {
+  Entity,
+  BaseEntity,
+  Column,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @Entity("client")
-export class Client extends BaseEntity {
+export class Client {
+  @PrimaryColumn()
+  id: number;
+
   @Column()
   first_name: string;
 
@@ -20,13 +30,13 @@ export class Client extends BaseEntity {
   card_number: string;
 
   @Column({
-    type: "numeric",
+    unique: true,
   })
-  balance: number;
+  employee_id: number;
 
-  @Column({
-    default: true,
-    name: "active",
-  })
-  is_active: boolean;
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
