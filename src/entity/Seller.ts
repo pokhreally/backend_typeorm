@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToMany,
+  JoinTable,
 } from "typeorm";
 import { Person } from "./utils/Person";
 import { Client } from "./Client";
@@ -24,8 +25,18 @@ export class Banker extends Person {
   is_active: boolean;
 
   @ManyToMany(() => Client)
-  
-  clients: Client[]
+  @JoinTable({
+    name: "bankers_clients",
+    joinColumn: {
+      name: "banker",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "client",
+      referencedColumnName: "id",
+    },
+  })
+  clients: Client[];
 
   @CreateDateColumn()
   created_at: Date;
