@@ -1,43 +1,35 @@
 import {
-    Entity,
-    BaseEntity,
-    Column,
-    PrimaryColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-  } from "typeorm";
+  Entity,
+  BaseEntity,
+  Column,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToMany,
+} from "typeorm";
+import { Person } from "./utils/Person";
+import { Client } from "./Client";
+
+@Entity("banker")
+export class Banker extends Person {
+  @Column({
+    type: "numeric",
+  })
+  balance: number;
+
+  @Column({
+    default: true,
+    name: "active",
+  })
+  is_active: boolean;
+
+  @ManyToMany(() => Client)
   
-  @Entity("banker")
-  export class Banker {
-    @PrimaryColumn()
-    id: number;
-  
-    @Column()
-    first_name: string;
-  
-    @Column()
-    last_name: string;
-  
-    @Column({
-      unique: true,
-    })
-    email: string;
-  
-    @Column({
-      type: "numeric",
-    })
-    balance: number;
-  
-    @Column({
-      default: true,
-      name: "active",
-    })
-    is_active: boolean;
-  
-    @CreateDateColumn()
-    created_at: Date;
-  
-    @UpdateDateColumn()
-    updated_at: Date;
-  }
-  
+  clients: Client[]
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+}

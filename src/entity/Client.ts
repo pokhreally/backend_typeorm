@@ -5,24 +5,13 @@ import {
   PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { Person } from "./utils/Person";
+import { Transaction } from "./Transaction";
 
 @Entity("client")
-export class Client {
-  @PrimaryColumn()
-  id: number;
-
-  @Column()
-  first_name: string;
-
-  @Column()
-  last_name: string;
-
-  @Column({
-    unique: true,
-  })
-  email: string;
-
+export class Client extends Person {
   @Column({
     unique: true,
     length: 10,
@@ -33,6 +22,9 @@ export class Client {
     unique: true,
   })
   employee_id: number;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.client)
+  transaction: Transaction[];
 
   @CreateDateColumn()
   created_at: Date;
