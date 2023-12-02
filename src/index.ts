@@ -3,6 +3,15 @@ import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
 import { AppDataSource } from "./data-source";
 import { AuthRoutes, ClientRoutes, UserRoutes } from "./routes";
+import * as cors from "cors";
+
+express().use(
+  cors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
 
 AppDataSource.initialize()
   .then(async () => {
