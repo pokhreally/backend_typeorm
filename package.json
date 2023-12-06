@@ -25,6 +25,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "typeorm": "typeorm-ts-node-commonjs",
-    "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' src/index.ts"
+    "dev": "nodemon --watch './**/*.ts' --exec ts-node src/index.ts",
+    "typeorm:generate-migration": "npm run typeorm -- -d "
   }
 }
