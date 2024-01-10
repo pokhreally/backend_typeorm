@@ -17,7 +17,7 @@ export class UserController {
     });
 
     if (!user) {
-      return "unregistered user";
+      return "Unregistered user";
     }
     return user;
   }
@@ -40,11 +40,11 @@ export class UserController {
     let userToRemove = await this.userRepository.findOneBy({ id });
 
     if (!userToRemove) {
-      return "this user not exist";
+      return "This user doesnot exist";
     }
 
     await this.userRepository.remove(userToRemove);
 
-    return "user has been removed";
+    return "User has been removed.";
   }
 }

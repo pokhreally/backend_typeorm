@@ -4,7 +4,6 @@ import { Person } from "../entity/utils/Person";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
-import { QueryFailedError } from "typeorm";
 
 dotenv.config();
 
