@@ -11,20 +11,6 @@ admin.initializeApp({
   credential: admin.credential.applicationDefault(),
 });
 
-const gToken = new GoogleToken({
-  keyFile: "key/notifyKey.json",
-  eagerRefreshThresholdMillis: 5 * 60 * 1000,
-  scope: ["profile", "email"],
-});
-
-gToken.getToken((err, tokens) => {
-  if (err) {
-    console.log(err.message);
-    return;
-  }
-  console.log(tokens);
-});
-
 const express = require("express");
 // const cors = require("cors");
 
