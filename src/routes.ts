@@ -48,4 +48,10 @@ export const AuthRoutes = [
     controller: AuthController,
     action: "one",
   },
+  {
+    method: "post",
+    route: "/notify",
+    controller: AuthController,
+    action: "notify",
+  },
 ];
