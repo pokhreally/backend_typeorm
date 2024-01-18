@@ -1,62 +1,67 @@
 import { AppDataSource } from "../data-source";
 import { NextFunction, Request, Response } from "express";
-import { Person } from "../entity/utils/Person";
+import { Client } from "../entity/Client";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
+import Flatted = require("flatted");
 
 dotenv.config();
 
 interface UserBody {
   email: string;
+  saving?: number;
   password: string;
 }
 
 interface UserDB {
-  id?: number;
-  first_name: string;
-  last_name: string;
+  id?: string;
   email: string;
   password: string;
 }
 
 export class AuthController {
-  private authRepository = AppDataSource.getRepository(Person);
+  private clientRepository = AppDataSource.getRepository(Client);
 
   async save(request: Request, response: Response, next: NextFunction) {
-    const { first_name, last_name, email, password } = request.body;
+    const { email, password, saving } = request.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newPerson = Object.assign(new Person(), {
-      first_name,
-      last_name,
+    const newPerson = Object.assign(new Client(), {
       email,
+      saving,
       password: hashedPassword,
     });
     try {
-      const { password: _, ...user } = await this.authRepository.save(
+      const { password: _, ...user } = await this.clientRepository.save(
         newPerson
       );
-      return { message: "User created successfully", user };
+      response.status(201).json({ message: "User created successfully" });
+      return;
     } catch (error) {
       if (error.code === "23505") {
-        response.status(401).json({ message: "Email Already Exists" });
+        response.status(200).json({ message: "Email Already Exist" });
+        return;
       }
     }
   }
 
   async one(request: Request, response: Response, next: NextFunction) {
-    const userFromBody = request.body;
-    const userFromDB = await this.authRepository.findOneBy({
-      email: userFromBody.email,
-    });
-
-    if (userFromDB) {
-      const result = this.getToken(userFromBody, userFromDB);
-      return result;
-    } else {
-      return { message: "Invalid Email" };
+    try {
+      const userFromBody = request.body;
+      const userFromDB = await this.clientRepository.findOneBy({
+        email: userFromBody.email,
+      });
+      if (userFromDB) {
+        const token = await this.getToken(userFromBody, userFromDB);
+        return token;
+      } else {
+        response.status(401).json({ message: "Invalid Email" });
+        return;
+      }
+    } catch (error) {
+      console.log("message:", error);
     }
   }
 
@@ -65,8 +70,6 @@ export class AuthController {
       const access_token = jwt.sign(
         {
           userId: userFromDB.id,
-          first_name: userFromDB.first_name,
-          last_name: userFromDB.last_name,
         },
         process.env.ACCESS_SECRET_KEY,
         { expiresIn: "1hr" }
@@ -75,8 +78,6 @@ export class AuthController {
       const refresh_token = jwt.sign(
         {
           userId: userFromDB.id,
-          first_name: userFromDB.first_name,
-          last_name: userFromDB.last_name,
         },
         process.env.REFRESH_SECRET_KEY,
         {

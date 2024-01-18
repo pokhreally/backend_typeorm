@@ -2,8 +2,9 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
+  ManyToMany,
+  CreateDateColumn,
+  JoinTable,
 } from "typeorm";
 import { Client } from "./Client";
 
@@ -18,19 +19,15 @@ export class Transaction {
   id: number;
 
   @Column({
-    type: "enum",
-    enum: TransactionTypes,
-  })
-  type: string;
-
-  @Column({
     type: "numeric",
+    nullable: true,
   })
   amount: number;
 
-  @ManyToOne(() => Client, (client) => client.transaction)
-  @JoinColumn({
-    name: "client_id",
-  })
-  client: Client;
+  @ManyToMany(() => Client, { cascade: true })
+  @JoinTable()
+  client: Client[];
+
+  @CreateDateColumn()
+  created_at: Date;
 }

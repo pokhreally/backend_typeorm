@@ -2,36 +2,21 @@ import {
   Entity,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
   ManyToMany,
+  JoinTable,
 } from "typeorm";
 import { Person } from "./utils/Person";
 import { Transaction } from "./Transaction";
-import { Banker } from "./Seller";
 
 @Entity("client")
 export class Client extends Person {
-  @Column({
-    unique: true,
-    length: 10,
-  })
-  card_number: string;
-
-  @Column({
-    unique: true,
-  })
-  employee_id: number;
-
-  @OneToMany(() => Transaction, (transaction) => transaction.client)
+  @ManyToMany(() => Transaction, { cascade: true })
+  @JoinTable()
   transaction: Transaction[];
 
-  @ManyToMany(() => Banker)
-  bankers: Banker[];
+  @Column({ default: 0 })
+  saving: number;
 
   @CreateDateColumn()
   created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }

@@ -1,33 +1,6 @@
-import { UserController } from "./controller/UserController";
 import { ClientController } from "./controller/ClientController";
 import { AuthController } from "./controller/AuthController";
-
-export const UserRoutes = [
-  {
-    method: "get",
-    route: "/users",
-    controller: UserController,
-    action: "all",
-  },
-  {
-    method: "get",
-    route: "/users/:id",
-    controller: UserController,
-    action: "one",
-  },
-  {
-    method: "post",
-    route: "/users",
-    controller: UserController,
-    action: "save",
-  },
-  {
-    method: "delete",
-    route: "/users/:id",
-    controller: UserController,
-    action: "remove",
-  },
-];
+import { TransactionController } from "./controller/TransactionController";
 
 export const ClientRoutes = [
   {
@@ -46,6 +19,12 @@ export const ClientRoutes = [
     method: "post",
     route: "/client",
     controller: ClientController,
+    action: "save",
+  },
+  {
+    method: "post",
+    route: "/transfer",
+    controller: TransactionController,
     action: "save",
   },
 ];
