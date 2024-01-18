@@ -4,7 +4,13 @@ import { Client } from "../entity/Client";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
-import Flatted = require("flatted");
+import * as admin from "firebase-admin";
+
+const serviceAccount = require("../../key/push-notification-11989-firebase-adminsdk-pdz3z-93018d94b3.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 dotenv.config();
 
@@ -44,6 +50,48 @@ export class AuthController {
         response.status(200).json({ message: "Email Already Exist" });
         return;
       }
+    }
+  }
+
+  async notify(request: Request, response: Response, next: NextFunction) {
+    const { deviceToken, userId } = request.body;
+    try {
+      const userData = await this.clientRepository.findOneBy({ id: userId });
+      console.log(userData);
+      console.log(deviceToken);
+      const registrationTokens = [deviceToken];
+      if (deviceToken && userData) {
+        const message = {
+          tokens: registrationTokens,
+          notification: {
+            body: "Transaction failed due to server error.",
+            title: userData.email,
+          },
+          android: {
+            notification: {
+              imageUrl:
+                "https://cdn.pixabay.com/photo/2021/01/10/20/03/laptop-5906264_1280.png",
+            },
+          },
+        };
+
+        setTimeout(() => {
+          admin
+            .messaging()
+            .sendEachForMulticast(message)
+            .then((response) => {
+              console.log("Successfully sent message:", response);
+            })
+            .catch((error) => {
+              console.log("Error sending message:", error);
+            });
+        }, 3000);
+
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      response.json(400).json({ message: "Failed to send notification" });
     }
   }
 

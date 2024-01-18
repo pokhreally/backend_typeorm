@@ -4,17 +4,10 @@ import { Request, Response } from "express";
 import { AppDataSource } from "./data-source";
 import { AuthRoutes, ClientRoutes } from "./routes";
 import * as cors from "cors";
-import * as admin from "firebase-admin";
-const { GoogleToken } = require("gtoken");
-
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-});
 
 const express = require("express");
 // const cors = require("cors");
-
-const app = express();
+// const app = express();
 // app.use(cors());
 
 AppDataSource.initialize()
