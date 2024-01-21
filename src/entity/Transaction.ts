@@ -24,9 +24,12 @@ export class Transaction {
   })
   amount: number;
 
-  @ManyToMany(() => Client, { cascade: true })
+  @ManyToMany(() => Client, (client) => client.id, { cascade: false })
   @JoinTable()
   client: Client[];
+
+  @Column({ enum: TransactionTypes })
+  status: string;
 
   @CreateDateColumn()
   created_at: Date;

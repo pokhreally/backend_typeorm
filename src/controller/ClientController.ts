@@ -21,7 +21,7 @@ export class ClientController {
 
       const { password: _, ...client } = singleUser;
 
-      response.status(200).json({ message: "Found User", client });
+      response.status(200).json(client);
       return;
     } catch (error) {
       console.error(error.message);

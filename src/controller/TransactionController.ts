@@ -1,6 +1,6 @@
 import { AppDataSource } from "../data-source";
 import { Request, Response, NextFunction } from "express";
-import { Transaction } from "../entity/Transaction";
+import { Transaction, TransactionTypes } from "../entity/Transaction";
 import { Client } from "../entity/Client";
 
 export class TransactionController {
@@ -9,19 +9,19 @@ export class TransactionController {
 
   async save(request: Request, response: Response, next: NextFunction) {
     try {
-      const { sender_id, receiver_id, amount } = request.body;
+      const { sender_number, receiver_number, amount } = request.body;
 
       // Validation
-      if (!sender_id || !receiver_id || !amount) {
+      if (!sender_number || !receiver_number || !amount) {
         response.status(400).json({ message: "Invalid request parameters" });
         return;
       }
 
       const senderInfo = await this.clientRepository.findOneBy({
-        id: sender_id,
+        phone: sender_number,
       });
       const receiverInfo = await this.clientRepository.findOneBy({
-        id: receiver_id,
+        phone: receiver_number,
       });
 
       // Check if sender has enough credits

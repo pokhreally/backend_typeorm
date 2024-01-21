@@ -10,8 +10,9 @@ import { Transaction } from "./Transaction";
 
 @Entity("client")
 export class Client extends Person {
-  @ManyToMany(() => Transaction, { cascade: true })
-  @JoinTable()
+  @ManyToMany(() => Transaction, (transaction) => transaction.id, {
+    cascade: false,
+  })
   transaction: Transaction[];
 
   @Column({ default: 0 })
