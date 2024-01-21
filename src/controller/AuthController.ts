@@ -30,19 +30,19 @@ export class AuthController {
   private clientRepository = AppDataSource.getRepository(Client);
 
   async save(request: Request, response: Response, next: NextFunction) {
-    const { email, password, saving } = request.body;
+    const { email, password, username, phone, saving } = request.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newPerson = Object.assign(new Client(), {
       email,
+      username,
+      phone,
       saving,
       password: hashedPassword,
     });
     try {
-      const { password: _, ...user } = await this.clientRepository.save(
-        newPerson
-      );
+      await this.clientRepository.save(newPerson);
       response.status(201).json({ message: "User created successfully" });
       return;
     } catch (error) {
@@ -57,8 +57,6 @@ export class AuthController {
     const { deviceToken, userId } = request.body;
     try {
       const userData = await this.clientRepository.findOneBy({ id: userId });
-      console.log(userData);
-      console.log(deviceToken);
       const registrationTokens = [deviceToken];
       if (deviceToken && userData) {
         const message = {
