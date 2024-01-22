@@ -1,6 +1,7 @@
 import { AppDataSource } from "../data-source";
 import { NextFunction, Request, Response } from "express";
 import { Client } from "../entity/Client";
+import { Transaction } from "../entity/Transaction";
 
 export class ClientController {
   private clientRepository = AppDataSource.getRepository(Client);
@@ -9,7 +10,7 @@ export class ClientController {
     return this.clientRepository.find();
   }
 
-  async one(request: Request, response: any, next: NextFunction) {
+  async getInfo(request: Request, response: any, next: NextFunction) {
     const id = request.params.id;
 
     try {

@@ -2,17 +2,15 @@ import {
   Entity,
   Column,
   CreateDateColumn,
-  ManyToMany,
-  JoinTable,
+  ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { Person } from "./utils/Person";
 import { Transaction } from "./Transaction";
 
 @Entity("client")
 export class Client extends Person {
-  @ManyToMany(() => Transaction, (transaction) => transaction.id, {
-    cascade: false,
-  })
+  @OneToMany(() => Transaction, (transaction) => transaction.id)
   transaction: Transaction[];
 
   @Column({ default: 0 })

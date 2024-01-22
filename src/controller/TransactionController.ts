@@ -7,7 +7,7 @@ export class TransactionController {
   private transactionRepository = AppDataSource.getRepository(Transaction);
   private clientRepository = AppDataSource.getRepository(Client);
 
-  async save(request: Request, response: Response, next: NextFunction) {
+  async transfer(request: Request, response: Response, next: NextFunction) {
     try {
       const { sender_number, receiver_number, amount } = request.body;
 
@@ -40,7 +40,7 @@ export class TransactionController {
         );
         await this.transactionRepository.save({
           amount,
-          client: [senderInfo, receiverInfo],
+          client: senderInfo,
         });
       });
 
@@ -65,5 +65,32 @@ export class TransactionController {
       ...receiverInfo,
       saving: receiverInfo.saving + parseInt(amount),
     });
+  }
+
+  async getTransactions(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
+    const id = request.params.id;
+
+    try {
+      const sender = await this.transactionRepository.find({
+        where: [{ sender: { id } }, { receiver: { id } }],
+        order: { created_at: "DESC" },
+        relations: { sender: true, receiver: true },
+      });
+
+      if (!sender) {
+        response.sendStatus(400).json({ message: "Invalid Credentials" });
+        return;
+      }
+
+      response.status(200).json(sender);
+      return;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   }
 }
