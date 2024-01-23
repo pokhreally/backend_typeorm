@@ -13,19 +13,25 @@ export const ClientRoutes = [
     method: "get",
     route: "/client/:id",
     controller: ClientController,
-    action: "one",
+    action: "getInfo",
   },
   {
-    method: "post",
-    route: "/client",
-    controller: ClientController,
-    action: "save",
+    method: "get",
+    route: "/transactions",
+    controller: TransactionController,
+    action: "all",
+  },
+  {
+    method: "get",
+    route: "/transactions/:id",
+    controller: TransactionController,
+    action: "getTransactions",
   },
   {
     method: "post",
     route: "/transfer",
     controller: TransactionController,
-    action: "save",
+    action: "transfer",
   },
 ];
 

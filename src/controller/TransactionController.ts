@@ -7,13 +7,27 @@ export class TransactionController {
   private transactionRepository = AppDataSource.getRepository(Transaction);
   private clientRepository = AppDataSource.getRepository(Client);
 
-  async save(request: Request, response: Response, next: NextFunction) {
+  async all(request: Request, response: Response, next: NextFunction) {
+    return this.transactionRepository.find({
+      relations: { sender: true, receiver: true },
+    });
+  }
+
+  async transfer(request: Request, response: Response, next: NextFunction) {
     try {
       const { sender_number, receiver_number, amount } = request.body;
 
       // Validation
       if (!sender_number || !receiver_number || !amount) {
         response.status(400).json({ message: "Invalid request parameters" });
+        return;
+      } else if (sender_number === receiver_number) {
+        response
+          .status(400)
+          .json({
+            message:
+              "Invalid request parameters (cannot transfer to the entered ID)",
+          });
         return;
       }
 
@@ -38,10 +52,13 @@ export class TransactionController {
           amount,
           entityManager
         );
-        await this.transactionRepository.save({
-          amount,
-          client: [senderInfo, receiverInfo],
-        });
+        await this.transactionRepository.save([
+          {
+            amount: parseInt(amount),
+            sender: senderInfo,
+            receiver: receiverInfo,
+          },
+        ]);
       });
 
       response.status(200).json({ message: "Transfer successful" });
@@ -65,5 +82,32 @@ export class TransactionController {
       ...receiverInfo,
       saving: receiverInfo.saving + parseInt(amount),
     });
+  }
+
+  async getTransactions(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
+    const id = request.params.id;
+
+    try {
+      const sender = await this.transactionRepository.find({
+        where: [{ sender: { id } }, { receiver: { id } }],
+        order: { created_at: "DESC" },
+        relations: { sender: true, receiver: true },
+      });
+
+      if (!sender) {
+        response.sendStatus(400).json({ message: "Invalid Credentials" });
+        return;
+      }
+
+      response.status(200).json(sender);
+      return;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   }
 }
