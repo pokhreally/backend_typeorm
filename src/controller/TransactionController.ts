@@ -7,6 +7,12 @@ export class TransactionController {
   private transactionRepository = AppDataSource.getRepository(Transaction);
   private clientRepository = AppDataSource.getRepository(Client);
 
+  async all(request: Request, response: Response, next: NextFunction) {
+    return this.transactionRepository.find({
+      relations: { sender: true, receiver: true },
+    });
+  }
+
   async transfer(request: Request, response: Response, next: NextFunction) {
     try {
       const { sender_number, receiver_number, amount } = request.body;
@@ -14,6 +20,14 @@ export class TransactionController {
       // Validation
       if (!sender_number || !receiver_number || !amount) {
         response.status(400).json({ message: "Invalid request parameters" });
+        return;
+      } else if (sender_number === receiver_number) {
+        response
+          .status(400)
+          .json({
+            message:
+              "Invalid request parameters (cannot transfer to the entered ID)",
+          });
         return;
       }
 
@@ -38,10 +52,13 @@ export class TransactionController {
           amount,
           entityManager
         );
-        await this.transactionRepository.save({
-          amount,
-          client: senderInfo,
-        });
+        await this.transactionRepository.save([
+          {
+            amount: parseInt(amount),
+            sender: senderInfo,
+            receiver: receiverInfo,
+          },
+        ]);
       });
 
       response.status(200).json({ message: "Transfer successful" });
