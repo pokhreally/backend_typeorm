@@ -29,6 +29,9 @@ export class Transaction {
   @ManyToOne(() => Client, (client) => client.id)
   receiver: Client;
 
+  @Column({ default: "Cash Transfer" })
+  remarks: string;
+
   @CreateDateColumn()
   created_at: Date;
 }
