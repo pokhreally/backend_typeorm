@@ -50,12 +50,6 @@ export const AuthRoutes = [
   },
   {
     method: "post",
-    route: "/refresh",
-    controller: AuthController,
-    action: "one",
-  },
-  {
-    method: "post",
     route: "/notify",
     controller: AuthController,
     action: "notify",

@@ -15,19 +15,17 @@ export class TransactionController {
 
   async transfer(request: Request, response: Response, next: NextFunction) {
     try {
-      const { sender_number, receiver_number, amount } = request.body;
+      const { sender_number, receiver_number, amount, remarks } = request.body;
 
       // Validation
       if (!sender_number || !receiver_number || !amount) {
         response.status(400).json({ message: "Invalid request parameters" });
         return;
       } else if (sender_number === receiver_number) {
-        response
-          .status(400)
-          .json({
-            message:
-              "Invalid request parameters (cannot transfer to the entered ID)",
-          });
+        response.status(400).json({
+          message:
+            "Invalid request parameters (cannot transfer to the entered ID)",
+        });
         return;
       }
 
@@ -57,6 +55,7 @@ export class TransactionController {
             amount: parseInt(amount),
             sender: senderInfo,
             receiver: receiverInfo,
+            remarks,
           },
         ]);
       });
